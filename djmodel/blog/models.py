@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.signals import pre_save, post_save
 from django.utils.encoding import smart_text
 from django.utils import timezone
 from django.utils.text import slugify
@@ -16,9 +17,18 @@ PUBLISH_CHOICES = (
 class PostModel(models.Model):
 	active        = models.BooleanField(default=True)
 	nonactive     = models.NullBooleanField(default=True)
-	title         = models.CharField(max_length=30, verbose_name="Title", unique=True)
+	title         = models.CharField(
+							max_length=30, 
+							verbose_name="Title", 
+							unique=True,
+							error_messages={
+								"unique": "This title is not unique. Please try again",
+								"blank": "This field has to be filled"
+								},
+							help_text="This field is important for the user",
+							)
 	description   = models.TextField(null=True, blank=True)
-	slug          = models.SlugField(null=True, blank=True)
+	slug          = models.SlugField(null=True, blank=True, editable=False)
 	publish       = models.CharField(max_length=120, choices=PUBLISH_CHOICES , default="draft")
 	view_count    = models.IntegerField(default=0)
 	publish_date  = models.DateField(auto_now=False, auto_now_add=False, default=timezone.now)
@@ -44,3 +54,16 @@ class PostModel(models.Model):
 	
 	def __str__(self):
 		return smart_text(self.title)
+
+
+# def blog_post_model_pre_save_receiver():
+# 	pass
+
+# def blog_post_model_post_save_receiver(semder. instance, created, *args, **kwargs):
+# 	if not instance.slug and instance.title:
+# 		instance.slug = slugify(instance.title)
+# 		instance.save()
+
+# pre_save.connect(blog_post_model_pre_save_receiver, sender=PostModel)
+
+# post_save_connect(blog_post_model_pre_save_receiver, sender=PostModel)
