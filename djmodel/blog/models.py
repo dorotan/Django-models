@@ -28,12 +28,14 @@ class PostModel(models.Model):
 							help_text="This field is important for the user",
 							)
 	description   = models.TextField(null=True, blank=True)
-	slug          = models.SlugField(null=True, blank=True, editable=False)
+	slug          = models.SlugField(max_length=250, null=True, blank=True, editable=False)
 	publish       = models.CharField(max_length=120, choices=PUBLISH_CHOICES , default="draft")
 	view_count    = models.IntegerField(default=0)
 	publish_date  = models.DateField(auto_now=False, auto_now_add=False, default=timezone.now)
 	author_email  = models.CharField(max_length=240, validators=[validate_author_email, validate_admin], null=True, blank=True)
 	second_author = models.EmailField(max_length=240, null=True, blank=True)
+	updated		  = models.DateTimeField(auto_now=True)
+	timestamp     = models.DateTimeField(auto_now_add=True)
 
 	def save(self, *args, **kwargs):
 		if not self.slug:
