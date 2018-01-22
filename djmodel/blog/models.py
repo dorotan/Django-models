@@ -14,6 +14,14 @@ PUBLISH_CHOICES = (
 		("private", "Private"),
 	)
 
+
+class PublishedManager(models.Manager):
+	def get_queryset(self):
+		return super(PublishedManager,
+					 self).get_queryset()\
+						  .filter(status="published")
+
+
 class PostModel(models.Model):
 	active        = models.BooleanField(default=True)
 	nonactive     = models.NullBooleanField(default=True)
@@ -36,6 +44,8 @@ class PostModel(models.Model):
 	second_author = models.EmailField(max_length=240, null=True, blank=True)
 	updated		  = models.DateTimeField(auto_now=True)
 	timestamp     = models.DateTimeField(auto_now_add=True)
+	objects       = models.Manager()
+	published     = PublishedManager()
 
 	def save(self, *args, **kwargs):
 		if not self.slug:
